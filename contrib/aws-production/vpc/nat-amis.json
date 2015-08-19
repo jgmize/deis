@@ -1,0 +1,5 @@
+{
+  "us-east-1": { "HVM":  "ami-303b1458" },
+  "us-west-2": { "HVM":  "ami-69ae8259" },
+  "eu-west-1": { "HVM":  "ami-6975eb1e" }
+}

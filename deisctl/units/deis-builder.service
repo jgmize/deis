@@ -16,3 +16,6 @@ RestartSec=5
 
 [Install]
 WantedBy=multi-user.target
+
+[X-Fleet]
+MachineMetadata="controlPlane=true"

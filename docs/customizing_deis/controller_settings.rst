@@ -40,6 +40,7 @@ The following etcd keys are used by the controller component.
 ====================================      ======================================================
 setting                                   description
 ====================================      ======================================================
+/deis/controller/conflicts                schedule units away from other units (only used with fleet, see section below)
 /deis/controller/registrationMode         set registration to "enabled", "disabled", or "admin_only" (default: "enabled")
 /deis/controller/schedulerModule          scheduler backend (default: "fleet")
 /deis/controller/subdomain                subdomain used by the router for API requests (default: "deis")
@@ -55,6 +56,18 @@ setting                                   description
 /deis/registry/port                       port of the registry component (set by registry)
 /deis/registry/protocol                   protocol of the registry component (set by registry)
 ====================================      ======================================================
+
+Fleet Conflicts
+------------------
+
+When using the fleet scheduler, if /deis/controller/conflicts is set to "true", the controller
+will add a `conflicts`_ glob pattern to the [X-Fleet] section of the fleet unit files to prevent
+multiple containers with the same app name, version, and process type from being scheduled on the
+same host.
+
+.. _`conflicts`: https://coreos.com/fleet/docs/latest/unit-files-and-scheduling.html#schedule-unit-away-from-other-unit%28s%29
+
+
 
 Using a custom controller image
 -------------------------------

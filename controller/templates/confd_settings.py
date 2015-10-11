@@ -69,8 +69,6 @@ USER_FILTER = '{{ if exists "/deis/controller/auth/ldap/user/filter" }}{{ getv "
 GROUP_BASEDN = '{{ if exists "/deis/controller/auth/ldap/group/basedn" }}{{ getv "/deis/controller/auth/ldap/group/basedn"}}{{ else }} {{ end }}'
 GROUP_FILTER = '{{ if exists "/deis/controller/auth/ldap/group/filter" }}{{ getv "/deis/controller/auth/ldap/group/filter"}}{{ else }} {{ end }}'
 GROUP_TYPE = '{{ if exists "/deis/controller/auth/ldap/group/type" }}{{ getv "/deis/controller/auth/ldap/group/type"}}{{ else }} {{ end }}'
-{{ if .deis_controller_conflicts }}
-X_FLEET_CONFLICTS = bool({{ .deis_controller_conflicts }})
-{{ else }}
-X_FLEET_CONFLICTS = bool(0)
 {{ end }}
+
+X_FLEET_CONFLICTS = '{{ if exists "/deis/controller/conflicts" }}{{ getv "/deis/controller/conflicts" }}{{else}} {{end}}'

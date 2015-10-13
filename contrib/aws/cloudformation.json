@@ -2,5 +2,21 @@
     {
         "ParameterKey":     "KeyPair",
         "ParameterValue":   "deis"
+    },
+    {
+        "ParameterKey":     "EC2VirtualizationType",
+        "ParameterValue":   "HVM"
+    },
+    {
+        "ParameterKey":     "InstanceType",
+        "ParameterValue":   "m4.xlarge"
+    },
+    {
+        "ParameterKey":     "DockerVolumeSize",
+        "ParameterValue":   "1000"
+    },
+    {
+        "ParameterKey":     "SSHFrom",
+        "ParameterValue":   "10.0.2.93/32"
     }
 ]

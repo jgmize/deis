@@ -320,15 +320,16 @@
         "Listeners": [
           {
             "InstancePort": "80",
-            "InstanceProtocol": "TCP",
+            "InstanceProtocol": "HTTP",
             "LoadBalancerPort": "80",
-            "Protocol": "TCP"
+            "Protocol": "HTTP"
           },
           {
-            "InstancePort": "443",
-            "InstanceProtocol": "TCP",
+            "InstancePort": "80",
+            "InstanceProtocol": "HTTP",
             "LoadBalancerPort": "443",
-            "Protocol": "TCP"
+            "Protocol": "HTTPS",
+            "SSLCertificateId": "arn:aws:iam::236517346949:server-certificate/certificate_object_name"
           },
           {
             "InstancePort": "2222",

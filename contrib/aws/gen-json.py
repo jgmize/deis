@@ -4,6 +4,7 @@ import json
 import os
 import urllib2
 import yaml
+from copy import deepcopy
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--channel', help='the CoreOS channel to use', default='stable')
@@ -144,5 +145,78 @@ if VPC_ID and VPC_SUBNETS and VPC_ZONES and len(VPC_SUBNETS.split(',')) == len(V
     template['Resources']['CoreOSServerAutoScale']['Properties']['AvailabilityZones'] = VPC_ZONES.split(',')
     template['Resources']['CoreOSServerAutoScale']['Properties']['VPCZoneIdentifier'] = VPC_PRIVATE_SUBNETS.split(',')
     template['Resources']['DeisWebELB']['Properties']['Subnets'] = VPC_SUBNETS.split(',')
+
+custom_elbs = [
+    ('AllizomELB',
+     {'Listeners': [
+         {'LoadBalancerPort': '80',
+          'Protocol': 'HTTP',
+          'InstancePort': '80',
+          'InstanceProtocol': 'HTTP'},
+         {'LoadBalancerPort': '443',
+          'Protocol': 'HTTPS',
+          'InstancePort': '80',
+          'InstanceProtocol': 'HTTP',
+          'SSLCertificateId': 'arn:aws:iam::236517346949:server-certificate/'
+              'wildcard.allizom.org'}]}),
+    ('MffosComELB',
+     {'Listeners': [
+         {'LoadBalancerPort': '80',
+          'Protocol': 'HTTP',
+          'InstancePort': '80',
+          'InstanceProtocol': 'HTTP'},
+         {'LoadBalancerPort': '443',
+          'Protocol': 'HTTPS',
+          'InstancePort': '80',
+          'InstanceProtocol': 'HTTP',
+          'SSLCertificateId': 'arn:aws:iam::236517346949:server-certificate/'
+              'wildcard.masterfirefoxos.com'}]}),
+    ('MffosMozOrgELB',
+     {'Listeners': [
+         {'LoadBalancerPort': '80',
+          'Protocol': 'HTTP',
+          'InstancePort': '80',
+          'InstanceProtocol': 'HTTP'},
+         {'LoadBalancerPort': '443',
+          'Protocol': 'HTTPS',
+          'InstancePort': '80',
+          'InstanceProtocol': 'HTTP',
+          'SSLCertificateId': 'arn:aws:iam::236517346949:server-certificate/'
+              'masterfirefoxos.mozilla.org'}]}),
+    ('MozOrgELB',
+     {'Listeners': [
+         {'LoadBalancerPort': '80',
+          'Protocol': 'HTTP',
+          'InstancePort': '80',
+          'InstanceProtocol': 'HTTP'},
+         {'LoadBalancerPort': '443',
+          'Protocol': 'HTTPS',
+          'InstancePort': '80',
+          'InstanceProtocol': 'HTTP',
+          'SSLCertificateId': 'TODO'}]}),
+    ('DeisWebELB',
+     {'Listeners': [
+         {'LoadBalancerPort': '80',
+          'Protocol': 'HTTP',
+          'InstancePort': '80',
+          'InstanceProtocol': 'HTTP'},
+         {'LoadBalancerPort': '443',
+          'Protocol': 'HTTPS',
+          'InstancePort': '80',
+          'InstanceProtocol': 'HTTP',
+          'SSLCertificateId': 'arn:aws:iam::236517346949:'
+              'server-certificate/certificate_object_name'},  #TODO: rename
+         {'InstancePort': '2222',
+          'InstanceProtocol': 'TCP',
+          'LoadBalancerPort': '2222',
+          'Protocol': 'TCP'}]})]
+
+for name, customization in custom_elbs:
+    elb = deepcopy(template['Resources']['DeisWebELB'])
+    elb.update(customization)
+    template['Resources'][name] = elb
+
+template['Resources']['CoreOSServerAutoScale']['Properties'][
+    'LoadBalancerNames'] = [{'Ref': name} for name, _ in custom_elbs]
 
 print json.dumps(template)

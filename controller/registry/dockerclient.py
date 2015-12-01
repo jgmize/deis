@@ -30,7 +30,13 @@ class DockerClient(object):
         name, tag = docker.utils.parse_repository_tag(target)
         # strip any "http://host.domain:port" prefix from the target repository name,
         # since we always publish to the Deis registry
-        name = strip_prefix(name)
+        stripped_name = strip_prefix(name)
+        if name == stripped_name:
+            # hack to allow custom deployment where jenkins pushes directly to same s3 buckets
+            # as those backing deis registry
+            deis_registry = True
+        else:
+            name = stripped_name
 
         # pull the source image from the registry
         # NOTE: this relies on an implementation detail of deis-builder, that

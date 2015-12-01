@@ -154,6 +154,8 @@ class FleetHTTPClient(AbstractSchedulerClient):
         if settings.ENABLE_PLACEMENT_OPTIONS in ['true', 'True', 'TRUE', '1']:
             unit.append({"section": "X-Fleet", "name": "MachineMetadata",
                          "value": tagset + ' "dataPlane=true"'})
+        unit.append({'section': 'X-Fleet', 'name': 'Conflicts',
+                     'value': name[:-1] + '*'})
         # post unit to fleet
         self._put_unit(name, {"desiredState": "loaded", "options": unit})
 

@@ -157,6 +157,8 @@ class FleetHTTPClient(AbstractSchedulerClient):
             tagset = ' '.join(['"{}={}"'.format(k, v) for k, v in unit_tags])
             unit.append({"section": "X-Fleet", "name": "MachineMetadata",
                          "value": tagset})
+        unit.append({'section': 'X-Fleet', 'name': 'Conflicts',
+                     'value': name[:-1] + '*'})
         # post unit to fleet
         self._put_unit(name, {"desiredState": "loaded", "options": unit})
 

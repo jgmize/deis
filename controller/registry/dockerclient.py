@@ -35,7 +35,7 @@ class DockerClient(object):
         # pull the source image from the registry
         # NOTE: this relies on an implementation detail of deis-builder, that
         # the image has been uploaded already to deis-registry
-        if deis_registry:
+        if deis_registry or '/' not in source:
             repo = "{}/{}".format(self.registry, src_name)
         else:
             repo = src_name

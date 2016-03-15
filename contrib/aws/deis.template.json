@@ -84,7 +84,7 @@
     "EC2VirtualizationType" : {
       "Description" : "EC2 AMI virtualization type (see http://aws.amazon.com/amazon-linux-ami/instance-type-matrix/)",
       "Type": "String",
-      "Default": "PV",
+      "Default": "HVM",
       "AllowedValues" : [ "PV", "HVM" ],
       "ConstraintDescription" : "must be either PV or HVM"
     },

@@ -18,6 +18,26 @@ MATCH = re.compile(
     '(?P<app>[a-z0-9-]+)_?(?P<version>v[0-9]+)?\.?(?P<c_type>[a-z-_]+)?.(?P<c_num>[0-9]+)')
 RETRIES = 3
 
+def app_config_truthy(app_name, key):
+    from api.models import _etcd_client
+    try:
+        v = _etcd_client.get('/deis/config/{}/{}'.format(app_name, key)).value
+        return bool(v)
+    except KeyError:
+        return False
+
+def append_x_fleet(name, unit, tags):
+    if settings.ENABLE_PLACEMENT_OPTIONS in ['true', 'True', 'TRUE', '1']:
+        tagset = ' '.join(['"{}={}"'.format(k, v) for k, v in tags.viewitems()])
+        unit.append({'section': 'X-Fleet', 'name': 'MachineMetadata',
+                      'value': tagset + ' "dataPlane=true"'})
+    if app_config_truthy(name, 'x_fleet_global'):
+        unit.append({'section': 'X-Fleet', 'name': 'Global',
+                     'value': 'true'})
+    else:
+        unit.append({'section': 'X-Fleet', 'name': 'Conflicts',
+                      'value': name[:-1] + '*'})
+    return unit
 
 class UHTTPConnection(httplib.HTTPConnection):
     """Subclass of Python library HTTPConnection that uses a Unix domain socket.
@@ -148,14 +168,7 @@ class FleetHTTPClient(AbstractSchedulerClient):
         # construct unit from template
         for f in unit:
             f['value'] = f['value'].format(**l)
-        # prepare tags only if one was provided
-        tags = kwargs.get('tags', {})
-        tagset = ' '.join(['"{}={}"'.format(k, v) for k, v in tags.viewitems()])
-        if settings.ENABLE_PLACEMENT_OPTIONS in ['true', 'True', 'TRUE', '1']:
-            unit.append({"section": "X-Fleet", "name": "MachineMetadata",
-                         "value": tagset + ' "dataPlane=true"'})
-        unit.append({'section': 'X-Fleet', 'name': 'Conflicts',
-                     'value': name[:-1] + '*'})
+        unit = append_x_fleet(name, unit, kwargs.get('tags', {}))
         # post unit to fleet
         self._put_unit(name, {"desiredState": "loaded", "options": unit})
 

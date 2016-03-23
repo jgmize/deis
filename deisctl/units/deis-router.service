@@ -16,4 +16,4 @@ RestartSec=5
 WantedBy=multi-user.target
 
 [X-Fleet]
-Conflicts=deis-router@*.service
+Global=true

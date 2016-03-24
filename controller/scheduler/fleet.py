@@ -32,7 +32,7 @@ def append_x_fleet(name, unit, tags):
         unit.append({'section': 'X-Fleet', 'name': 'MachineMetadata',
                       'value': tagset + ' "dataPlane=true"'})
     if (name.endswith('.cmd.1') or name.endswith('.web.1')) and (
-            app_config_truthy(name, 'x_fleet_global')):
+            app_config_truthy(name.split('_')[0], 'x_fleet_global')):
         unit.append({'section': 'X-Fleet', 'name': 'Global',
                      'value': 'true'})
     else:

@@ -147,6 +147,10 @@ func (s *Server) publishContainer(container *docker.APIContainers, ttl time.Dura
 						continue
 					}
 				}
+				globalApp := s.getEtcd(configKey + "x_fleet_global")
+				if globalApp != "" {
+					keyPath = keyPath + "." + hostAndPort
+				}
 				s.setEtcd(keyPath, hostAndPort, uint64(ttl.Seconds()))
 				safeMap.Lock()
 				safeMap.data[container.ID] = appPath
